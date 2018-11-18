@@ -40,7 +40,7 @@ public class Reciver2 : MonoBehaviour {
         yield return new WaitForSeconds(10);
         eventBus.unregister(this, typeof(Event));
         yield return new WaitForSeconds(10);
-        eventBus.unregisterMainThread(this,typeof(Event));
+        eventBus.unregisterAll(this,typeof(Event));
     }
 
 

@@ -22,9 +22,13 @@ public class Sender2 : MonoBehaviour {
         while (isRunning)
         {
             Event e = new Event();
+            Event e2 = new Event();
             e.a = 10;
-            bus.postOnMainThread(e);
+            e2.a = 20;
+            bus.postEvent(e);
             Thread.Sleep(1000);
+            bus.postEventAsync(e2);
+            Thread.Sleep(2000);
         }
     }
 	
