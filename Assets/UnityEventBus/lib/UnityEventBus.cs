@@ -173,7 +173,7 @@ public class UnityEventBus
 
     private void post(object eventIns, Priority priority)
     {
-
+        Queue<EventMethod> eventMethodQueue = new Queue<EventMethod>();
         lock (lockMutex)
         {
             if (!subDictionary.ContainsKey(eventIns.GetType()))
@@ -188,18 +188,24 @@ public class UnityEventBus
                     i--;
                     continue;
                 }
-
                 EventMethod method = subDictionary[eventIns.GetType()][i];
-                method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.Public | BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
-
+                eventMethodQueue.Enqueue(method);   
             }
         }
+
+
+        for(int i = 0; i < eventMethodQueue.Count; i++)
+        {
+            EventMethod method = eventMethodQueue.Dequeue();
+            method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.Public | BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
+        }
+
 
     }
 
     private void postMain(object eventIns, Priority priority)
     {
-
+        Queue<EventMethod> eventMethodQueue = new Queue<EventMethod>();
         lock (lockMutexMain)
         {
             if (!subDictionaryMain.ContainsKey(eventIns.GetType()))
@@ -216,10 +222,18 @@ public class UnityEventBus
                 }
 
                 EventMethod method = subDictionaryMain[eventIns.GetType()][i];
-                method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.Public | BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
+                eventMethodQueue.Enqueue(method);
 
             }
         }
+
+        for (int i = 0; i < eventMethodQueue.Count; i++)
+        {
+            EventMethod method = eventMethodQueue.Dequeue();
+            method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.Public | BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
+        }
+
+
 
     }
 

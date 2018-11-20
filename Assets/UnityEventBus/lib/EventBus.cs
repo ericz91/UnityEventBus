@@ -32,6 +32,7 @@ public class EventBus : MonoBehaviour {
 
     private void Start()
     {
+        ThreadPool.SetMaxThreads(5, 5);
         asyncThread.Start();
     }
 
@@ -97,7 +98,7 @@ public class EventBus : MonoBehaviour {
             {
                 tmp = asyncQueue.Dequeue();
             }
-            postEvent(tmp);
+            ThreadPool.QueueUserWorkItem(postEvent, tmp);
         }
            
     }
