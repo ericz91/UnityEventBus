@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class Reciver2 : MonoBehaviour {
@@ -9,30 +10,23 @@ public class Reciver2 : MonoBehaviour {
     void Start()
     {
         eventBus.register(this);
-        StartCoroutine(unre());
+        //StartCoroutine(unre());
     }
 
     [Subscriber]
     public void Rec1(Event e)
     {
-        Debug.Log("REC ATTR OK" + e.a);
-    }
-
-    public void EBRec1(Event e)
-    {
-        Debug.Log("REC EB OK" + e.a);
+        Debug.Log("REC ATTR OK" + e.a + "  "+ Thread.CurrentThread.GetHashCode());
+       
     }
 
 
-    public void EBMRec1(Event e)
-    {
-        Debug.Log("REC EBM OK" + e.a);
-    }
 
     [SubscriberMain]
     public void rec2(Event e)
     {
-        Debug.Log("REC ATTR OK" + e.a);
+        Debug.Log("REC ATTR OK" + e.a + "  " + Thread.CurrentThread.GetHashCode());
+
     }
 
     IEnumerator unre()

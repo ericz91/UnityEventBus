@@ -14,7 +14,7 @@ public class Sender2 : MonoBehaviour {
         isRunning = true;
         thread = new Thread(sendMainThread);
         thread.Start();
-        StartCoroutine(se());
+        //StartCoroutine(se());
 	}
 
     void sendMainThread()
@@ -25,10 +25,20 @@ public class Sender2 : MonoBehaviour {
             Event e2 = new Event();
             e.a = 10;
             e2.a = 20;
-            bus.postEvent(e);
-            Thread.Sleep(1000);
             bus.postEventAsync(e2);
-            Thread.Sleep(2000);
+            bus.postEventAsync(e2);
+            bus.postEventAsync(e2);
+            bus.postEventAsync(e2);
+            bus.postEventAsync(e2);
+            bus.postEventAsync(e2);
+            bus.postEventAsync(e2);
+            bus.postEventAsync(e2);
+            bus.postEventAsync(e2);
+            bus.postEventAsync(e2);
+            bus.postEventAsync(e2);
+            bus.postEventAsync(e2);
+            Thread.Sleep(10);
+          
         }
     }
 	
@@ -43,8 +53,8 @@ public class Sender2 : MonoBehaviour {
         while (true)
         {
             Event e = new Event();
-            e.a = 20;
-            bus.postEvent(e);
+            e.a = 30;
+            bus.postEventAsync(e);
             yield return new WaitForSeconds(1);
         }
     }
@@ -54,5 +64,9 @@ public class Sender2 : MonoBehaviour {
         isRunning = false;
     }
 
+    private void OnApplicationQuit()
+    {
+        isRunning = false;
+    }
 
 }
