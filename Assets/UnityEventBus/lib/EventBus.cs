@@ -102,4 +102,12 @@ public class EventBus : MonoBehaviour {
     }
 
 
+
+
+    private void OnApplicationQuit()
+    {
+      
+    }
+
+
 }
