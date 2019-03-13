@@ -2,8 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Event  {
+namespace cn.blockstudio.unityeventbus
+{
+    public class Event
+    {
 
-    public int a;
+        public int a;
 
+    }
 }
+
+
