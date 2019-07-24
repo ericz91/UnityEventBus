@@ -89,7 +89,7 @@ namespace cn.blockstudio.unityeventbus
 
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
 
             object tmp;

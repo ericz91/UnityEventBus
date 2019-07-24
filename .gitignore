@@ -4,3 +4,8 @@
 /UnityEventBus.csproj
 /UnityEventBus.sln
 /.vs
+*.csproj
+*.sln
+/Logs
+/obj
+/Packages
