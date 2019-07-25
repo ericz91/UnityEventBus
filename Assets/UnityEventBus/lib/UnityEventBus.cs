@@ -175,7 +175,6 @@ namespace cn.blockstudio.unityeventbus
 
         private void post(object eventIns, Priority priority)
         {
-            List<EventMethod> eventMethods = new List<EventMethod>();
             lock (lockMutex)
             {
                 if (!subDictionary.ContainsKey(eventIns.GetType()))
@@ -191,24 +190,14 @@ namespace cn.blockstudio.unityeventbus
                         continue;
                     }
                     EventMethod method = subDictionary[eventIns.GetType()][i];
-                    eventMethods.Add(method);
-                    //method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.Public | BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
+                    method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
                 }
             }
-
-            foreach (EventMethod method in eventMethods)
-            {
-                method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.Public | BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
-            }
-
-
-
 
         }
 
         private void postMain(object eventIns, Priority priority)
         {
-            List<EventMethod> eventMethods = new List<EventMethod>();
             lock (lockMutexMain)
             {
                 if (!subDictionaryMain.ContainsKey(eventIns.GetType()))
@@ -225,19 +214,10 @@ namespace cn.blockstudio.unityeventbus
                     }
 
                     EventMethod method = subDictionaryMain[eventIns.GetType()][i];
-                    eventMethods.Add(method);
-                    //method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.Public | BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
+                    method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
 
                 }
             }
-
-            foreach (EventMethod method in eventMethods)
-            {
-                method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.Public | BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
-            }
-
-
-
         }
 
 
