@@ -15,6 +15,7 @@ namespace cn.blockstudio.unityeventbus
         // Use this for initialization
         void Start()
         {
+            bus = EventBus.GetInstance();
             isRunning = true;
             thread = new Thread(sendMainThread);
             thread.Start();

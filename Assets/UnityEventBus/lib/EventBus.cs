@@ -13,7 +13,9 @@ namespace cn.blockstudio.unityeventbus
         private Queue<object> mainQueue;
         private object lockQueue;
 
-        public static EventBus instance;
+        private static EventBus instance;
+
+ 
 
         // Use this for initialization
         void Awake()
@@ -22,18 +24,24 @@ namespace cn.blockstudio.unityeventbus
             eventBus = UnityEventBus.getInstance();
             mainQueue = new Queue<object>();
             lockQueue = new object();
-
-            if (instance == null)
-                instance = this;
-            else if (instance != this)
-                instance = this;
-    
-            DontDestroyOnLoad(this.gameObject);
         }
 
         private void Start()
         {
             ThreadPool.SetMaxThreads(5, 5);
+        }
+
+        public static EventBus GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new GameObject("EventBus").AddComponent<EventBus>();
+                DontDestroyOnLoad(instance.gameObject);
+            }
+                
+
+
+            return instance;
         }
 
         // 注册事件
@@ -89,7 +97,7 @@ namespace cn.blockstudio.unityeventbus
 
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
 
             object tmp;

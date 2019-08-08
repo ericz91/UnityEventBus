@@ -13,6 +13,7 @@ namespace cn.blockstudio.unityeventbus
 
         void Start()
         {
+            eventBus = EventBus.GetInstance();
             eventBus.register(this);
             //StartCoroutine(unre());
         }
