@@ -57,6 +57,7 @@ using UnityEngine;
         public void recm3(EventBB e)
         {
             Debug.Log("低优先级，在update里调用此条事件，变量：a" + e.a);
+
         }
 
 
