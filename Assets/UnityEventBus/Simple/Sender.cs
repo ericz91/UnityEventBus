@@ -18,7 +18,7 @@ public class Sender : MonoBehaviour
         isRunning = true;
         thread = new Thread(sendMainThread);
         thread.Start();
-        //StartCoroutine(se());
+        StartCoroutine(se());
     }
 
     void sendMainThread()
@@ -30,8 +30,9 @@ public class Sender : MonoBehaviour
             e.a = 10;
             e2.a = 20;
             bus.postEvent(e);
+            bus.postEventAsync(e);
             bus.postEventAsync(e2);
-        
+            bus.postEvent(e2);
             Thread.Sleep(1000);
 
         }
@@ -51,7 +52,7 @@ public class Sender : MonoBehaviour
             EventAA e = new EventAA();
             e.a = 30;
             bus.postEventAsync(e);
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(2.5f);
         }
     }
 
