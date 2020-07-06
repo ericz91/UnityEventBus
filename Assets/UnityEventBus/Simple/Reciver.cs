@@ -86,6 +86,8 @@ using UnityEngine;
             yield return new WaitForSeconds(10);
             eventBus.unregister(this, typeof(EventAA));
             yield return new WaitForSeconds(10);
+            eventBus.unregisterMainThread(this, typeof(EventBB));
+            yield return new WaitForSeconds(10);
             eventBus.unregisterAll(this, typeof(EventBB));
         }
 
