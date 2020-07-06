@@ -8,7 +8,7 @@ namespace cn.blockstudio.unityeventbus
     [AttributeUsage(AttributeTargets.Method)]
     public class Subscriber : Attribute
     {
-
+        public ExecutePriority CallbackPriority { get; set; }
 
     }
 
