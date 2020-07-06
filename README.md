@@ -16,84 +16,40 @@
 特性有如下几种：
 - 普通事件：
     - 普通事件可用于数据处理，可在任意线程执行：
-        - 特性[Subscriber(CallbackPriority = )] 指定回调优先级
-            - CallbackPriority 特性枚举有：
-                - ExecutePriority.HIGH 高优先级
-                - ExecutePriority.MIDDLE 中优先级
-                - ExecutePriority.LOW 低优先级
+        - 特性[Subscriber(CallbackPriority = )] 指定回调优先级 0-99 数字越小优先级越高
+            
 
 - 主线程事件：
      - 主线程事件用于处理必须在U3D主线程执行的回调
         - 特性[SubscriberMain]
-            - CallbackPriority 特性枚举有：
-                - ExecutePriority.HIGH 高优先级
-                - ExecutePriority.MIDDLE 中优先级
-                - ExecutePriority.LOW 低优先级
+            - CallbackPriority 指定回调优先级 0-99 数字越小优先级越高
             - CallbackExecuteType 特性枚举有：
                 - ExecuteType.UPDATE 在Update执行回调
                 - ExecuteType.FIXEDUPDATE 在FixedUpdate执行回调
 
 例子如下：
-
 ```
-        [Subscriber(CallbackPriority = ExecutePriority.HIGH)]
-        public void Rec1(EventAA e)
-        {
-            Debug.Log("高优先级，普通订阅事件， 变量a:"+e.a);
+[Subscriber(CallbackPriority = 99)]
+public void Rec4(EventBB e)
+{
+    Debug.Log("BB 优先级99，普通订阅事件， 变量a:" + e.a);
 
-        }
-        [Subscriber(CallbackPriority = ExecutePriority.MIDDLE)]
-        public void Rec2(EventAA e)
-        {
-            Debug.Log("中优先级，普通订阅事件， 变量a:" + e.a);
-
-        }
+}
 
 
-        [Subscriber(CallbackPriority = ExecutePriority.LOW)]
-        public void Rec3(EventAA e)
-        {
-            Debug.Log("低优先级，普通订阅事件， 变量a:" + e.a);
-
-        }
-
-                [SubscriberMain(CallbackPriority = ExecutePriority.HIGH, CallbackExecuteType = ExecuteType.UPDATE)]
-        public void recm1(EventBB e)
-        {
-            Debug.Log("高优先级，在update里调用此条事件，变量：a" + e.a);
-        }
-
-        [SubscriberMain(CallbackPriority = ExecutePriority.MIDDLE, CallbackExecuteType = ExecuteType.UPDATE)]
-        public void recm2(EventBB e)
-        {
-            Debug.Log("中优先级，在update里调用此条事件，变量：a" + e.a);
-        }
-
-                [SubscriberMain(CallbackPriority = ExecutePriority.LOW, CallbackExecuteType = ExecuteType.UPDATE)]
-        public void recm3(EventBB e)
-        {
-            Debug.Log("低优先级，在update里调用此条事件，变量：a" + e.a);
-        }
+[SubscriberMain(CallbackPriority = 30, CallbackExecuteType = ExecuteType.UPDATE)]
+public void recm2(EventBB e)
+{
+     Debug.Log("BB 优先级30，在update里调用此条事件，变量：a" + e.a);
+}
 
 
-        [SubscriberMain(CallbackPriority = ExecutePriority.HIGH, CallbackExecuteType = ExecuteType.FIXEDUPDATE)]
-        public void recf1(EventBB e)
-        {
-            Debug.Log("高优先级，在fixedupdate里调用此条事件 变量：a" + e.a);
-        }
 
-        [SubscriberMain(CallbackPriority = ExecutePriority.MIDDLE, CallbackExecuteType = ExecuteType.FIXEDUPDATE)]
-        public void recf2(EventBB e)
-        {
-            Debug.Log("中优先级，在fixedupdate里调用此条事件 变量：a" + e.a);
-        }
-
-
-        [SubscriberMain(CallbackPriority = ExecutePriority.LOW, CallbackExecuteType = ExecuteType.FIXEDUPDATE)]
-        public void recf3(EventBB e)
-        {
-            Debug.Log("低优先级，在fixedupdate里调用此条事件 变量：a" + e.a);
-        }
+[SubscriberMain(CallbackPriority = 95, CallbackExecuteType = ExecuteType.FIXEDUPDATE)]
+public void recf3(EventBB e)
+{
+    Debug.Log("BB 优先级95，在fixedupdate里调用此条事件 变量：a" + e.a);
+}  
 ```
 
 #### 在Awake或者Start内部调用register，注册事件：

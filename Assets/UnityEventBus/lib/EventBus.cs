@@ -15,20 +15,21 @@ namespace cn.blockstudio.unityeventbus
         private object lockMutex;
         private object lockMutexMain;
 
-        private Dictionary<Type, List<EventMethod>>[] subDictionary;
-        private Dictionary<Type, List<EventMethod>> subDictionaryHighLevel;
-        private Dictionary<Type, List<EventMethod>> subDictionaryMiddleLevel;
-        private Dictionary<Type, List<EventMethod>> subDictionaryLowLevel;
+        private Dictionary<Type, List<EventMethod>[]> subDictionary;
 
-        private Dictionary<Type, List<EventMethodMain>>[] subDictionaryMainUd;
-        private Dictionary<Type, List<EventMethodMain>> subDictionaryMainHighLevelUd;
-        private Dictionary<Type, List<EventMethodMain>> subDictionaryMainMiddelLevelUd;
-        private Dictionary<Type, List<EventMethodMain>> subDictionaryMainLowLevelUd;
+        //private Dictionary<Type, List<EventMethod>> subDictionaryHighLevel;
+        //private Dictionary<Type, List<EventMethod>> subDictionaryMiddleLevel;
+        //private Dictionary<Type, List<EventMethod>> subDictionaryLowLevel;
 
-        private Dictionary<Type, List<EventMethodMain>>[] subDictionaryMainFUd;
-        private Dictionary<Type, List<EventMethodMain>> subDictionaryMainHighLevelFUd;
-        private Dictionary<Type, List<EventMethodMain>> subDictionaryMainMiddelLevelFUd;
-        private Dictionary<Type, List<EventMethodMain>> subDictionaryMainLowLevelFUd;
+        private Dictionary<Type, List<EventMethodMain>[]> subDictionaryMainUd;
+        //private Dictionary<Type, List<EventMethodMain>> subDictionaryMainHighLevelUd;
+        //private Dictionary<Type, List<EventMethodMain>> subDictionaryMainMiddelLevelUd;
+        //private Dictionary<Type, List<EventMethodMain>> subDictionaryMainLowLevelUd;
+
+        private Dictionary<Type, List<EventMethodMain>[]> subDictionaryMainFUd;
+        //private Dictionary<Type, List<EventMethodMain>> subDictionaryMainHighLevelFUd;
+        //private Dictionary<Type, List<EventMethodMain>> subDictionaryMainMiddelLevelFUd;
+        // private Dictionary<Type, List<EventMethodMain>> subDictionaryMainLowLevelFUd;
 
         public static EventBus getInstance()
         {
@@ -45,42 +46,26 @@ namespace cn.blockstudio.unityeventbus
             initSubDir();
             initSubMainDirUd();
             initSubMainDirFUd();
-            
+
             lockMutex = new object();
             lockMutexMain = new object();
         }
 
         private void initSubDir()
         {
-            subDictionaryHighLevel = new Dictionary<Type, List<EventMethod>>();
-            subDictionaryMiddleLevel = new Dictionary<Type, List<EventMethod>>();
-            subDictionaryLowLevel = new Dictionary<Type, List<EventMethod>>();
-            subDictionary = new Dictionary<Type, List<EventMethod>>[3];
-            subDictionary[0] = subDictionaryHighLevel;
-            subDictionary[1] = subDictionaryMiddleLevel;
-            subDictionary[2] = subDictionaryLowLevel;
+            subDictionary = new Dictionary<Type, List<EventMethod>[]>();
+
         }
 
         private void initSubMainDirUd()
         {
-            subDictionaryMainUd = new Dictionary<Type, List<EventMethodMain>>[3];
-            subDictionaryMainHighLevelUd = new Dictionary<Type, List<EventMethodMain>>();
-            subDictionaryMainMiddelLevelUd = new Dictionary<Type, List<EventMethodMain>>();
-            subDictionaryMainLowLevelUd = new Dictionary<Type, List<EventMethodMain>>();
-            subDictionaryMainUd[0] = subDictionaryMainHighLevelUd;
-            subDictionaryMainUd[1] = subDictionaryMainMiddelLevelUd;
-            subDictionaryMainUd[2] = subDictionaryMainLowLevelUd;
+            subDictionaryMainUd = new Dictionary<Type, List<EventMethodMain>[]>();
         }
 
         private void initSubMainDirFUd()
         {
-            subDictionaryMainFUd = new Dictionary<Type, List<EventMethodMain>>[3];
-            subDictionaryMainHighLevelFUd = new Dictionary<Type, List<EventMethodMain>>();
-            subDictionaryMainMiddelLevelFUd = new Dictionary<Type, List<EventMethodMain>>();
-            subDictionaryMainLowLevelFUd = new Dictionary<Type, List<EventMethodMain>>();
-            subDictionaryMainFUd[0] = subDictionaryMainHighLevelFUd;
-            subDictionaryMainFUd[1] = subDictionaryMainMiddelLevelFUd;
-            subDictionaryMainFUd[2] = subDictionaryMainLowLevelFUd;
+            subDictionaryMainFUd = new Dictionary<Type, List<EventMethodMain>[]>();
+
         }
 
 
@@ -123,22 +108,28 @@ namespace cn.blockstudio.unityeventbus
             lock (lockMutex)
             {
 
-                for (int i = 0; i < 3; i++)
+
+                if (!subDictionary.ContainsKey(eventType))
+                    return;
+
+
+                for (int m = 0; m < subDictionary[eventType].Length; m++)
                 {
-                    if (!subDictionary[i].ContainsKey(eventType))
+                    if (subDictionary[eventType][m] == null)
                         continue;
 
-                    for (int m = 0; m < subDictionary[i][eventType].Count; m++)
+                    for (int k = 0; k < subDictionary[eventType][m].Count; k++)
                     {
-                        if (subDictionary[i][eventType][m].subscriber.Equals(subscriber))
+                        if (subDictionary[eventType][m][k].subscriber.Equals(subscriber))
                         {
-                            subDictionary[i][eventType].Remove(subDictionary[i][eventType][m]);
-                            m--;
+                            subDictionary[eventType][m].Remove(subDictionary[eventType][m][k]);
+                            k--;
                             continue;
                         }
                     }
-
                 }
+
+
 
             }
 
@@ -154,40 +145,46 @@ namespace cn.blockstudio.unityeventbus
             lock (lockMutexMain)
             {
 
-                for (int i = 0; i < 3; i++)
+                if (subDictionaryMainUd.ContainsKey(eventType))
                 {
-
-                    if (!subDictionaryMainUd[i].ContainsKey(eventType))
-                        continue;
-
-                    for (int m = 0; m < subDictionaryMainUd[i][eventType].Count; m++)
+                    for (int m = 0; m < subDictionaryMainUd[eventType].Length; m++)
                     {
-                        if (subDictionaryMainUd[i][eventType][m].subscriber.Equals(subscriber))
-                        {
-                            subDictionaryMainUd[i][eventType].Remove(subDictionaryMainUd[i][eventType][m]);
-                            m--;
+                        if (subDictionaryMainUd[eventType][m] == null)
                             continue;
+
+                        for (int k = 0; k < subDictionaryMainUd[eventType][m].Count; k++)
+                        {
+                            if (subDictionaryMainUd[eventType][m][k].subscriber.Equals(subscriber))
+                            {
+                                subDictionaryMainUd[eventType][m].Remove(subDictionaryMainUd[eventType][m][k]);
+                                k--;
+                                continue;
+                            }
                         }
                     }
                 }
 
 
-                for (int i = 0; i < 3; i++)
+                if (subDictionaryMainFUd.ContainsKey(eventType))
                 {
-
-                    if (!subDictionaryMainFUd[i].ContainsKey(eventType))
-                        continue;
-
-                    for (int m = 0; m < subDictionaryMainFUd[i][eventType].Count; m++)
+                    for (int m = 0; m < subDictionaryMainFUd[eventType].Length; m++)
                     {
-                        if (subDictionaryMainFUd[i][eventType][m].subscriber.Equals(subscriber))
-                        {
-                            subDictionaryMainFUd[i][eventType].Remove(subDictionaryMainFUd[i][eventType][m]);
-                            m--;
+                        if (subDictionaryMainFUd[eventType][m] == null)
                             continue;
+
+                        for (int k = 0; k < subDictionaryMainFUd[eventType][m].Count; k++)
+                        {
+                            if (subDictionaryMainFUd[eventType][m][k].subscriber.Equals(subscriber))
+                            {
+                                subDictionaryMainFUd[eventType][m].Remove(subDictionaryMainFUd[eventType][m][k]);
+                                k--;
+                                continue;
+                            }
                         }
                     }
                 }
+
+
             }
 
         }
@@ -201,26 +198,21 @@ namespace cn.blockstudio.unityeventbus
         private void subscribe(EventMethod subscriberMethod)
         {
 
-            int p = 0;
-
-            switch (subscriberMethod.executePriority)
+            if (!subDictionary.ContainsKey(subscriberMethod.eventType))
             {
-                case ExecutePriority.HIGH:p = 0;break;
-                case ExecutePriority.MIDDLE:p = 1;break;
-                case ExecutePriority.LOW:p = 2;break;
-                default:break;
+                List<EventMethod>[] methods = new List<EventMethod>[100];
+                subDictionary.Add(subscriberMethod.eventType, methods);
+                
             }
 
-            if (subDictionary[p].ContainsKey(subscriberMethod.eventType))
+             if(subDictionary[subscriberMethod.eventType][subscriberMethod.executePriority] == null)
             {
-                subDictionary[p][subscriberMethod.eventType].Add(subscriberMethod);
-                return;
+                subDictionary[subscriberMethod.eventType][subscriberMethod.executePriority] = new List<EventMethod>();
             }
 
+            subDictionary[subscriberMethod.eventType][subscriberMethod.executePriority].Add(subscriberMethod);
 
-            List<EventMethod> methods = new List<EventMethod>();
-            subDictionary[p].Add(subscriberMethod.eventType, methods);
-            subDictionary[p][subscriberMethod.eventType].Add(subscriberMethod);
+
         }
 
         /// <summary>
@@ -230,45 +222,39 @@ namespace cn.blockstudio.unityeventbus
         private void subscribeMain(EventMethodMain subscriberMethod)
         {
 
-
-            if(subscriberMethod.executeType== ExecuteType.UPDATE)
+            if (subscriberMethod.executeType == ExecuteType.UPDATE)
             {
-                int p = 0;
-                switch (subscriberMethod.executePriority)
+                if (!subDictionaryMainUd.ContainsKey(subscriberMethod.eventType))
                 {
-                    case ExecutePriority.HIGH: p = 0; break;
-                    case ExecutePriority.MIDDLE: p = 1; break;
-                    case ExecutePriority.LOW: p = 2; break;
-                    default: break;
-                }
-                if (subDictionaryMainUd[p].ContainsKey(subscriberMethod.eventType))
-                {
-                    subDictionaryMainUd[p][subscriberMethod.eventType].Add(subscriberMethod);
-                    return;
-                }
-                List<EventMethodMain> methods = new List<EventMethodMain>();
-                subDictionaryMainUd[p].Add(subscriberMethod.eventType, methods);
-                subDictionaryMainUd[p][subscriberMethod.eventType].Add(subscriberMethod);
+                    List<EventMethodMain>[] methods = new List<EventMethodMain>[100];
+                    subDictionaryMainUd.Add(subscriberMethod.eventType, methods);
 
-            } else if(subscriberMethod.executeType == ExecuteType.FIXEDUPDATE)
+                }
+
+                if (subDictionaryMainUd[subscriberMethod.eventType][subscriberMethod.executePriority] == null)
+                {
+                    subDictionaryMainUd[subscriberMethod.eventType][subscriberMethod.executePriority] = new List<EventMethodMain>();
+                }
+
+                subDictionaryMainUd[subscriberMethod.eventType][subscriberMethod.executePriority].Add(subscriberMethod);
+
+            }
+            else if (subscriberMethod.executeType == ExecuteType.FIXEDUPDATE)
             {
-                int p = 0;
-                switch (subscriberMethod.executePriority)
+                if (!subDictionaryMainFUd.ContainsKey(subscriberMethod.eventType))
                 {
-                    case ExecutePriority.HIGH: p = 0; break;
-                    case ExecutePriority.MIDDLE: p = 1; break;
-                    case ExecutePriority.LOW: p = 2; break;
-                    default: break;
+                    List<EventMethodMain>[] methods = new List<EventMethodMain>[100];
+                    subDictionaryMainFUd.Add(subscriberMethod.eventType, methods);
+
                 }
-                if (subDictionaryMainFUd[p].ContainsKey(subscriberMethod.eventType))
+
+                if (subDictionaryMainFUd[subscriberMethod.eventType][subscriberMethod.executePriority] == null)
                 {
-                    subDictionaryMainFUd[p][subscriberMethod.eventType].Add(subscriberMethod);
-                    return;
+                    subDictionaryMainFUd[subscriberMethod.eventType][subscriberMethod.executePriority] = new List<EventMethodMain>();
                 }
-                List<EventMethodMain> methods = new List<EventMethodMain>();
-                subDictionaryMainFUd[p].Add(subscriberMethod.eventType, methods);
-                subDictionaryMainFUd[p][subscriberMethod.eventType].Add(subscriberMethod);
-            }          
+
+                subDictionaryMainFUd[subscriberMethod.eventType][subscriberMethod.executePriority].Add(subscriberMethod);
+            }
         }
 
 
@@ -280,26 +266,37 @@ namespace cn.blockstudio.unityeventbus
         {
             lock (lockMutex)
             {
-                for(int m =0; m < 3; m++)
+
+                if (!subDictionary.ContainsKey(eventIns.GetType()))
+                    return;
+
+                Type eventType = eventIns.GetType();
+
+                for (int i = 0; i < subDictionary[eventType].Length; i++)
                 {
-                    if (!subDictionary[m].ContainsKey(eventIns.GetType()))
+                    if (subDictionary[eventType][i] == null)
                         continue;
 
-
-                    for (int i = 0; i < subDictionary[m][eventIns.GetType()].Count; i++)
+                    for(int k = 0; k < subDictionary[eventType][i].Count; k++)
                     {
-                        if (subDictionary[m][eventIns.GetType()][i].subscriber == null)
+                        if (subDictionary[eventType][i][k] == null)
+                            continue;
+
+                        if (subDictionary[eventType][i][k].subscriber == null)
                         {
-                            subDictionary[m][eventIns.GetType()].Remove(subDictionary[m][eventIns.GetType()][i]);
-                            i--;
+                            subDictionary[eventType][i].Remove(subDictionary[eventType][i][k]);
+                            k--;
                             continue;
                         }
-                        EventMethod method = subDictionary[m][eventIns.GetType()][i];
-                        method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
-                    }
 
-                }              
+                        EventMethod method = subDictionary[eventType][i][k];
+                        method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
+
+                    }
+                }
+
             }
+
         }
 
         /// <summary>
@@ -310,24 +307,30 @@ namespace cn.blockstudio.unityeventbus
         {
             lock (lockMutexMain)
             {
+                if (!subDictionaryMainUd.ContainsKey(eventIns.GetType()))
+                    return;
+
+                Type eventType = eventIns.GetType();
+
+                for (int i = 0; i < subDictionaryMainUd[eventType].Length; i++)
                 {
-                    for (int m = 0; m < 3; m++)
+                    if (subDictionaryMainUd[eventType][i] == null)
+                        continue;
+
+                    for (int k = 0; k < subDictionaryMainUd[eventType][i].Count; k++)
                     {
-                        if (!subDictionaryMainUd[m].ContainsKey(eventIns.GetType()))
+                        if (subDictionaryMainUd[eventType][i][k] == null)
                             continue;
 
-
-                        for (int i = 0; i < subDictionaryMainUd[m][eventIns.GetType()].Count; i++)
+                        if (subDictionaryMainUd[eventType][i][k].subscriber == null)
                         {
-                            if (subDictionaryMainUd[m][eventIns.GetType()][i].subscriber == null)
-                            {
-                                subDictionaryMainUd[m][eventIns.GetType()].Remove(subDictionaryMainUd[m][eventIns.GetType()][i]);
-                                i--;
-                                continue;
-                            }
-                            EventMethod method = subDictionaryMainUd[m][eventIns.GetType()][i];
-                            method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
+                            subDictionaryMainUd[eventType][i].Remove(subDictionaryMainUd[eventType][i][k]);
+                            k--;
+                            continue;
                         }
+
+                        EventMethod method = subDictionaryMainUd[eventType][i][k];
+                        method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
 
                     }
                 }
@@ -343,24 +346,30 @@ namespace cn.blockstudio.unityeventbus
         {
             lock (lockMutexMain)
             {
+                if (!subDictionaryMainFUd.ContainsKey(eventIns.GetType()))
+                    return;
+
+                Type eventType = eventIns.GetType();
+
+                for (int i = 0; i < subDictionaryMainFUd[eventType].Length; i++)
                 {
-                    for (int m = 0; m < 3; m++)
+                    if (subDictionaryMainFUd[eventType][i] == null)
+                        continue;
+
+                    for (int k = 0; k < subDictionaryMainFUd[eventType][i].Count; k++)
                     {
-                        if (!subDictionaryMainFUd[m].ContainsKey(eventIns.GetType()))
+                        if (subDictionaryMainFUd[eventType][i][k] == null)
                             continue;
 
-
-                        for (int i = 0; i < subDictionaryMainFUd[m][eventIns.GetType()].Count; i++)
+                        if (subDictionaryMainFUd[eventType][i][k].subscriber == null)
                         {
-                            if (subDictionaryMainFUd[m][eventIns.GetType()][i].subscriber == null)
-                            {
-                                subDictionaryMainFUd[m][eventIns.GetType()].Remove(subDictionaryMainFUd[m][eventIns.GetType()][i]);
-                                i--;
-                                continue;
-                            }
-                            EventMethod method = subDictionaryMainFUd[m][eventIns.GetType()][i];
-                            method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
+                            subDictionaryMainFUd[eventType][i].Remove(subDictionaryMainFUd[eventType][i][k]);
+                            k--;
+                            continue;
                         }
+
+                        EventMethod method = subDictionaryMainFUd[eventType][i][k];
+                        method.subscriber.GetType().InvokeMember(method.eventMethodName, BindingFlags.InvokeMethod, null, method.subscriber, new object[] { eventIns });
 
                     }
                 }
@@ -373,7 +382,7 @@ namespace cn.blockstudio.unityeventbus
             public Type eventType;
             public object subscriber;
             public string eventMethodName;
-            public ExecutePriority executePriority;
+            public int executePriority;
         }
 
         private class EventMethodMain : EventMethod
@@ -398,7 +407,7 @@ namespace cn.blockstudio.unityeventbus
                     tmp.eventType = infos[i].GetParameters()[0].ParameterType;
                     tmp.subscriber = subscriber;
                     tmp.eventMethodName = infos[i].Name;
-                    tmp.executePriority = st.CallbackPriority;                   
+                    tmp.executePriority = st.CallbackPriority;
                     eventMethods.Add(tmp);
                 }
                 else
