@@ -11,12 +11,4 @@ namespace cn.blockstudio.unityeventbus
         FIXEDUPDATE
     }
 
-    public enum ExecutePriority
-    {
-        LOW,
-        MIDDLE,
-        HIGH
-    }
-
-
 }
