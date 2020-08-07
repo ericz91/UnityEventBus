@@ -8,21 +8,43 @@ namespace cn.blockstudio.unityeventbus
     public class UnityEventBus : MonoBehaviour
     {
 
-        private EventBus eventBus;
-        private Queue<object> updateQueue;
-        private Queue<object> fixedQueue;
-        private object lockQueue;
-
+        private static EventBus eventBus = EventBus.getInstance();
+        private static Queue<object> updateQueue;
+        private static Queue<object> fixedQueue;
+        private static object lockQueue;
+        private static bool isQuit = false;
 
         private static UnityEventBus instance;
 
- 
+        
+        public static UnityEventBus Instance { get {
+
+                if (isQuit)
+                    return null;
+
+                if (instance == null)
+                {
+                    instance = new GameObject("UnityEventBus").AddComponent<UnityEventBus>();
+                    DontDestroyOnLoad(instance.gameObject);
+                }
+
+                return instance;
+
+            }
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        static void initBus()
+        {
+            var a = Instance;
+        }
+
+
 
         // Use this for initialization
         void Awake()
         {
-
-            eventBus = EventBus.getInstance();
+            isQuit = false;
             updateQueue = new Queue<object>();
             fixedQueue = new Queue<object>();
             lockQueue = new object();
@@ -33,38 +55,41 @@ namespace cn.blockstudio.unityeventbus
             ThreadPool.SetMaxThreads(5, 5);
         }
 
-        public static UnityEventBus GetInstance()
-        {
-            if (instance == null)
-            {
-                instance = new GameObject("UnityEventBus").AddComponent<UnityEventBus>();
-                DontDestroyOnLoad(instance.gameObject);
-            }
+
+
+        //public static UnityEventBus GetInstance()
+        //{
+        //    if (isQuit)
+        //        return null;
+
+        //    if (instance == null)
+        //    {
+        //        instance = new GameObject("UnityEventBus").AddComponent<UnityEventBus>();
+        //        DontDestroyOnLoad(instance.gameObject);
+        //    }
                 
-
-
-            return instance;
-        }
+        //    return instance;
+        //}
 
         // 注册事件
-        public void register(object subscriber)
+        public static void Register(object subscriber)
         {
             eventBus.register(subscriber);
         }
 
         //取消注册
-        public void unregisterAll(object subscriber, Type eventType)
+        public static void UnregisterAll(object subscriber, Type eventType)
         {
             eventBus.unregister(subscriber, eventType);
             eventBus.unregisterMain(subscriber, eventType);
         }
 
-        public void unregisterMainThread(object subscriber, Type eventType)
+        public static void UnregisterMainThread(object subscriber, Type eventType)
         {
             eventBus.unregisterMain(subscriber, eventType);
         }
 
-        public void unregister(object subscriber, Type eventType)
+        public static void Unregister(object subscriber, Type eventType)
         {
             eventBus.unregister(subscriber, eventType);
         }
@@ -74,8 +99,10 @@ namespace cn.blockstudio.unityeventbus
         /// 传递事件
         /// </summary>
         /// <param name="eventIns"></param>
-        public void postEvent(object eventIns)
+        public void PostEvent(object eventIns)
         {
+
+
             eventBus.post(eventIns);
             postOnMainThread(eventIns);
         }
@@ -84,14 +111,18 @@ namespace cn.blockstudio.unityeventbus
         /// 异步传递事件
         /// </summary>
         /// <param name="eventIns"></param>
-        public void postEventAsync(object eventIns)
+        public void PostEventAsync(object eventIns)
         {
-            ThreadPool.QueueUserWorkItem(postEvent, eventIns);
+
+            ThreadPool.QueueUserWorkItem(PostEvent, eventIns);
         }
 
 
         private void postOnMainThread(object eventIns)
         {
+            if (isQuit == true || updateQueue == null || updateQueue == null)
+                return;
+
             lock (lockQueue)
             {
                 updateQueue.Enqueue(eventIns);
@@ -138,12 +169,19 @@ namespace cn.blockstudio.unityeventbus
 
 
 
+        private void OnDisable()
+        {
+            isQuit = true;
+        }
 
-
+        private void OnDestroy()
+        {
+            isQuit = true;
+        }
 
         private void OnApplicationQuit()
         {
-
+            isQuit = true;
         }
 
 

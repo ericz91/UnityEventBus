@@ -14,11 +14,11 @@ public class Sender : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        bus = UnityEventBus.GetInstance();
         isRunning = true;
         thread = new Thread(sendMainThread);
         thread.Start();
         StartCoroutine(se());
+        
     }
 
     void sendMainThread()
@@ -29,10 +29,10 @@ public class Sender : MonoBehaviour
             EventBB e2 = new EventBB();
             e.a = 10;
             e2.a = 20;
-            bus.postEvent(e);
-            bus.postEventAsync(e);
-            bus.postEventAsync(e2);
-            bus.postEvent(e2);
+            UnityEventBus.Instance.PostEvent(e);
+            UnityEventBus.Instance.PostEventAsync(e);
+            UnityEventBus.Instance.PostEventAsync(e2);
+            UnityEventBus.Instance.PostEvent(e2);
             Thread.Sleep(1000);
 
         }
@@ -51,13 +51,14 @@ public class Sender : MonoBehaviour
         {
             EventAA e = new EventAA();
             e.a = 30;
-            bus.postEventAsync(e);
+            UnityEventBus.Instance.PostEventAsync(e);
             yield return new WaitForSeconds(2.5f);
         }
     }
 
     private void OnDestroy()
     {
+        UnityEventBus.UnregisterAll(this, typeof(EventAA));
         isRunning = false;
     }
 

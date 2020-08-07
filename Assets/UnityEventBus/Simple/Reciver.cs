@@ -12,8 +12,8 @@ public class Reciver : MonoBehaviour
 
     void Start()
     {
-        eventBus = UnityEventBus.GetInstance();
-        eventBus.register(this);
+ 
+        UnityEventBus.Register(this);
         StartCoroutine(unre());
     }
 
@@ -90,13 +90,13 @@ public class Reciver : MonoBehaviour
     IEnumerator unre()
     {
         yield return new WaitForSeconds(10);
-        eventBus.unregister(this, typeof(EventAA));
+        UnityEventBus.Unregister(this, typeof(EventAA));
         Debug.Log("卸载AA");
         yield return new WaitForSeconds(10);
-        eventBus.unregisterMainThread(this, typeof(EventBB));
+        UnityEventBus.UnregisterMainThread(this, typeof(EventBB));
         Debug.Log("主线程卸载BB");
         yield return new WaitForSeconds(10);
-        eventBus.unregisterAll(this, typeof(EventBB));
+        UnityEventBus.UnregisterAll(this, typeof(EventBB));
         Debug.Log("卸载全部BB");
     }
 

@@ -53,11 +53,11 @@ public void recf3(EventBB e)
 ```
 
 #### 在Awake或者Start内部调用register，注册事件：
-- 拿到UnityEventBus实例，注册事件：
+- 注册事件：
 
 例子如下：
 ```
-UnityEventBus.GetInstance().register(this);
+UnityEventBus.Register(this);
 ```
 
 ### 事件发送：
@@ -65,22 +65,21 @@ UnityEventBus.GetInstance().register(this);
 
 例子如下：
 ```
-var bus = UnityEventBus.GetInstance();
+var bus = UnityEventBus.Instance;
 EventAA e = new EventAA();
 EventBB e2 = new EventBB();
 e.a = 10;
 e2.a = 20;
-bus.postEvent(e);//同步发送事件（对主线程事件类型的回调无作用）
-bus.postEventAsync(e2); //异步发送事件（对主线程事件类型的回调无作用）
+bus.PostEvent(e);//同步发送事件（对主线程事件类型的回调无作用）
+bus.PostEventAsync(e2); //异步发送事件（对主线程事件类型的回调无作用）
 ```
 
 ### 事件取消注册：
-- 拿到EventBus实例，调用unregister,unregisterMainThread,unregisterAll取消注册
+- 调用unregister,unregisterMainThread,unregisterAll取消注册
 
 例子如下：
 ```
-var bus = UnityEventBus.GetInstance();
-bus.unregister(this, typeof(EventAA)); //取消注册的普通事件
-bus.unregisterMainThread(this, typeof(EventAA));//取消主线程事件
-bus.unregisterAll(this, typeof(EventAA));//取消所有事件
+UnityEventBus.Unregister(this, typeof(EventAA)); //取消注册的普通事件
+UnityEventBus.UnregisterMainThread(this, typeof(EventAA));//取消主线程事件
+UnityEventBus.UnregisterAll(this, typeof(EventAA));//取消所有事件
 ```
